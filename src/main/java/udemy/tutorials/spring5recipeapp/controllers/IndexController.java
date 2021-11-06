@@ -1,32 +1,22 @@
 package udemy.tutorials.spring5recipeapp.controllers;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import udemy.tutorials.spring5recipeapp.domain.Category;
-import udemy.tutorials.spring5recipeapp.domain.UnitOfMeasure;
-import udemy.tutorials.spring5recipeapp.repositories.CategoryRepository;
-import udemy.tutorials.spring5recipeapp.repositories.UnitOfMeasureRepository;
-
-import java.util.Optional;
+import udemy.tutorials.spring5recipeapp.services.RecipeService;
 
 @Controller
 public class IndexController {
+  private final RecipeService recipeService;
 
-  private CategoryRepository categoryRepository;
-  private UnitOfMeasureRepository unitOfMeasureRepository;
-
-  public IndexController(CategoryRepository categoryRepository, UnitOfMeasureRepository unitOfMeasureRepository) {
-    this.categoryRepository = categoryRepository;
-    this.unitOfMeasureRepository = unitOfMeasureRepository;
+  public IndexController(RecipeService recipeService) {
+    this.recipeService =  recipeService;
   }
 
   @RequestMapping({"", "/", "/index"})
-  public String getIndexPage() {
-    Optional<Category> categoryOptional = categoryRepository.findByDescription("American");
-    Optional<UnitOfMeasure> unitOfMeasureOptional = unitOfMeasureRepository.findByDescription("Teaspoon");
+  public String getIndexPage(Model model) {
 
-    System.out.println("Category ID is: " + categoryOptional.get().getId());
-    System.out.println("UOM ID is: " + unitOfMeasureOptional.get().getId());
+    model.addAttribute("recipes", recipeService.getRecipes());
 
     return "index";
   }
