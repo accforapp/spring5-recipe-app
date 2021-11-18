@@ -33,8 +33,62 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
+    saveCategoryData();
+    saveUOMData();
     recipeRepository.saveAll(getRecipes());
     log.debug("Loading Bootstrap Data");
+  }
+
+  private void saveCategoryData() {
+    Category american = new Category();
+    american.setDescription("American");
+    categoryRepository.save(american);
+
+    Category italian = new Category();
+    italian.setDescription("Italian");
+    categoryRepository.save(italian);
+
+    Category mexican = new Category();
+    mexican.setDescription("Mexican");
+    categoryRepository.save(mexican);
+
+    Category fastFood = new Category();
+    fastFood.setDescription("Fast Food");
+    categoryRepository.save(fastFood);
+  }
+
+  private void saveUOMData() {
+    UnitOfMeasure teaspoon = new UnitOfMeasure();
+    teaspoon.setDescription("Teaspoon");
+    unitOfMeasureRepository.save(teaspoon);
+
+    UnitOfMeasure tablespoon = new UnitOfMeasure();
+    tablespoon.setDescription("Tablespoon");
+    unitOfMeasureRepository.save(tablespoon);
+
+    UnitOfMeasure cup = new UnitOfMeasure();
+    cup.setDescription("Cup");
+    unitOfMeasureRepository.save(cup);
+
+    UnitOfMeasure pinch = new UnitOfMeasure();
+    pinch.setDescription("Pinch");
+    unitOfMeasureRepository.save(pinch);
+
+    UnitOfMeasure ounce = new UnitOfMeasure();
+    ounce.setDescription("Ounce");
+    unitOfMeasureRepository.save(ounce);
+
+    UnitOfMeasure each = new UnitOfMeasure();
+    each.setDescription("Each");
+    unitOfMeasureRepository.save(each);
+
+    UnitOfMeasure dash = new UnitOfMeasure();
+    dash.setDescription("Dash");
+    unitOfMeasureRepository.save(dash);
+
+    UnitOfMeasure pint = new UnitOfMeasure();
+    pint.setDescription("Pint");
+    unitOfMeasureRepository.save(pint);
   }
 
   private List<Recipe> getRecipes() {
@@ -145,7 +199,7 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     tacosRecipe.setCookTime(9);
     tacosRecipe.setPrepTime(20);
     tacosRecipe.setDifficulty(Difficulty.MODERATE);
-    tacosRecipe.setDescription("1 Prepare a gas or charcoal grill for medium-high, direct heat.\n" +
+    tacosRecipe.setDirections("1 Prepare a gas or charcoal grill for medium-high, direct heat.\n" +
         "2 Make the marinade and coat the chicken: In a large bowl, stir together the chili powder, oregano, cumin, sugar, salt, garlic and orange zest. Stir in the orange juice and olive oil to make a loose paste. Add the chicken to the bowl and toss to coat all over.\n" +
         "Set aside to marinate while the grill heats and you prepare the rest of the toppings.\n" +
         "\n" +
