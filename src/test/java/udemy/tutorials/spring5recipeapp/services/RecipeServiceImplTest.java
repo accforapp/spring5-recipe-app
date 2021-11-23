@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import udemy.tutorials.spring5recipeapp.converters.RecipeCommandToRecipe;
+import udemy.tutorials.spring5recipeapp.converters.RecipeToRecipeCommand;
 import udemy.tutorials.spring5recipeapp.domain.Recipe;
 import udemy.tutorials.spring5recipeapp.repositories.RecipeRepository;
 
@@ -22,11 +24,17 @@ class RecipeServiceImplTest {
   @Mock
   RecipeRepository recipeRepository;
 
+  @Mock
+  RecipeToRecipeCommand recipeToRecipeCommand;
+
+  @Mock
+  RecipeCommandToRecipe recipeCommandToRecipe;
+
   @BeforeEach
   void setUp() {
     MockitoAnnotations.initMocks(this);
 
-    recipeService = new RecipeServiceImpl(recipeRepository);
+    recipeService = new RecipeServiceImpl(recipeRepository, recipeCommandToRecipe, recipeToRecipeCommand);
   }
 
   @Test
