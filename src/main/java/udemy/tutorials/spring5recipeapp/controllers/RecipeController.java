@@ -2,8 +2,8 @@ package udemy.tutorials.spring5recipeapp.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import udemy.tutorials.spring5recipeapp.commands.RecipeCommand;
 import udemy.tutorials.spring5recipeapp.services.RecipeService;
 
 @Controller
@@ -20,5 +20,19 @@ public class RecipeController {
     model.addAttribute("recipe", recipeService.findById(Long.valueOf(id)));
 
     return "recipe/show";
+  }
+
+  @RequestMapping("/recipe/new")
+  public String newRecipe(Model model) {
+    model.addAttribute("recipe", new RecipeCommand());
+
+    return "recipe/recipeform";
+  }
+
+  @PostMapping("recipe")
+  public String saveOrUpdate(@ModelAttribute RecipeCommand command) {
+    RecipeCommand savedRecipe = recipeService.saveRecipeCommand(command);
+
+    return "redirect:/recipe/show/" + savedRecipe.getId();
   }
 }
