@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import udemy.tutorials.spring5recipeapp.commands.RecipeCommand;
 import udemy.tutorials.spring5recipeapp.converters.RecipeCommandToRecipe;
 import udemy.tutorials.spring5recipeapp.converters.RecipeToRecipeCommand;
 import udemy.tutorials.spring5recipeapp.domain.Recipe;
@@ -16,6 +17,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class RecipeServiceImplTest {
 
@@ -43,7 +48,7 @@ class RecipeServiceImplTest {
     recipe.setId(1L);
     Optional<Recipe> recipeOptional = Optional.of(recipe);
 
-    Mockito.when(recipeRepository.findById(Mockito.anyLong())).thenReturn(recipeOptional);
+    when(recipeRepository.findById(Mockito.anyLong())).thenReturn(recipeOptional);
 
     Recipe recipeReturned = recipeService.findById(1L);
 
@@ -53,17 +58,47 @@ class RecipeServiceImplTest {
   }
 
   @Test
+  void getRecipeCommandByIdTest() {
+    Recipe recipe = new Recipe();
+    recipe.setId(1L);
+
+    Optional<Recipe> recipeOptional = Optional.of(recipe);
+
+    when(recipeRepository.findById(Mockito.anyLong())).thenReturn(recipeOptional);
+
+    RecipeCommand recipeCommand = new RecipeCommand();
+    recipeCommand.setId(1L);
+
+    when(recipeToRecipeCommand.convert(any())).thenReturn(recipeCommand);
+
+    RecipeCommand commandById = recipeService.findCommandById(1L);
+
+    assertNotNull(commandById);
+    verify(recipeRepository).findById(anyLong());
+    verify(recipeToRecipeCommand).convert(any(Recipe.class));
+  }
+
+  @Test
   void getRecipes() {
     Recipe recipe = new Recipe();
     Set<Recipe> recipesData = new HashSet<>();
 
     recipesData.add(recipe);
 
-    Mockito.when(recipeRepository.findAll()).thenReturn(recipesData);
+    when(recipeRepository.findAll()).thenReturn(recipesData);
 
     Set<Recipe> recipes = recipeService.getRecipes();
 
     Assertions.assertEquals(recipes.size(), 1);
     Mockito.verify(recipeRepository, Mockito.times(1)).findAll();
+  }
+
+  @Test
+  void deleteRecipeByIdTest() {
+    Long idForDelete = 2L;
+
+    recipeService.deleteRecipeById(idForDelete);
+
+    verify(recipeRepository).deleteById(anyLong());
   }
 }
