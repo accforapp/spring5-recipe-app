@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import udemy.tutorials.spring5recipeapp.commands.IngredientCommand;
@@ -75,6 +76,23 @@ public class IngredientControllerTest {
   }
 
   @Test
+  void testNewIngredientForm() throws Exception {
+    RecipeCommand recipeCommand = new RecipeCommand();
+    recipeCommand.setId(1L);
+
+    when(recipeService.findCommandById(anyLong())).thenReturn(recipeCommand);
+    when(uomService.listAllUoms()).thenReturn(new HashSet<>());
+
+    mockMvc.perform(get("/recipe/1/ingredient/new"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("recipe/ingredients/ingredientform"))
+        .andExpect(model().attributeExists("ingredient"))
+        .andExpect(model().attributeExists("uomList"));
+
+    verify(recipeService).findCommandById(anyLong());
+  }
+
+  @Test
   void testUpdateIngredient() throws Exception {
     IngredientCommand ingredientCommand = new IngredientCommand();
     Set<UnitOfMeasureCommand> uoms = new HashSet<>();
@@ -87,5 +105,16 @@ public class IngredientControllerTest {
         .andExpect(view().name("recipe/ingredients/ingredientform"))
         .andExpect(model().attributeExists("ingredient"))
         .andExpect(model().attributeExists("uomList"));
+  }
+
+  @Test
+  void testDeleteIngredient() throws Exception {
+    mockMvc.perform(get("/recipe/2/ingredient/3/delete")
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("id", "")
+        .param("description", "some string")
+    )
+        .andExpect(status().is3xxRedirection())
+        .andExpect(view().name("redirect:/recipe/2/ingredients"));
   }
 }

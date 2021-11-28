@@ -2,6 +2,7 @@ package udemy.tutorials.spring5recipeapp.services;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import udemy.tutorials.spring5recipeapp.commands.IngredientCommand;
@@ -16,7 +17,9 @@ import udemy.tutorials.spring5recipeapp.domain.UnitOfMeasure;
 import udemy.tutorials.spring5recipeapp.repositories.RecipeRepository;
 import udemy.tutorials.spring5recipeapp.repositories.UnitOfMeasureRepository;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -101,5 +104,28 @@ class IngredientServiceImplTest {
     assertNotNull(savedIngredientCommand);
     assertEquals(2L, savedIngredientCommand.getId());
     assertEquals(1L, savedIngredientCommand.getRecipeId());
+  }
+
+  @Test
+  void deleteByIdTest() {
+    Recipe recipe = new Recipe();
+    recipe.setId(1L);
+
+    Ingredient ingredient1 = new Ingredient();
+    ingredient1.setId(10L);
+
+    Ingredient ingredient2 = new Ingredient();
+    ingredient2.setId(20L);
+
+    recipe.addIngredient(ingredient1);
+    recipe.addIngredient(ingredient2);
+
+    when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe));
+    when(recipeRepository.save(any())).thenReturn(recipe);
+
+    ingredientService.deleteById(1L, 10L);
+
+    verify(recipeRepository).findById(1L);
+    verify(recipeRepository).save(any(Recipe.class));
   }
 }

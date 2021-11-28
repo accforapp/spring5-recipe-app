@@ -11,6 +11,7 @@ import udemy.tutorials.spring5recipeapp.domain.Recipe;
 import udemy.tutorials.spring5recipeapp.repositories.RecipeRepository;
 import udemy.tutorials.spring5recipeapp.repositories.UnitOfMeasureRepository;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -67,24 +68,61 @@ public class IngredientServiceImpl implements IngredientService {
       Recipe recipe = optionalRecipe.get();
 
       Optional<Ingredient> ingredientOptional = recipe.getIngredients().stream()
-          .filter(ingredient -> command.getId().equals(ingredient.getId()))
+          .filter(ingredient -> Objects.equals(ingredient.getId(), command.getId()))
           .findFirst();
 
       if (ingredientOptional.isPresent()) {
+
         Ingredient ingredient = ingredientOptional.get();
         ingredient.setDescription(command.getDescription());
         ingredient.setAmount(command.getAmount());
         ingredient.setUom(uomRepository.findById(command.getUom().getId()).orElseThrow(() -> new RuntimeException("UOM not found")));
+
       } else {
-        recipe.addIngredient(ingredientCommandToIngredient.convert(command));
+
+        Ingredient ingredient = ingredientCommandToIngredient.convert(command);
+        ingredient.setRecipe(recipe);
+        recipe.addIngredient(ingredient);
       }
 
-      Ingredient savedIngredient = recipeRepository.save(recipe).getIngredients().stream()
-          .filter(ingredient -> command.getId().equals(ingredient.getId()))
-          .findFirst()
-          .get();
+      Recipe savedRecipe = recipeRepository.save(recipe);
 
-      return ingredientToIngredientCommand.convert(savedIngredient);
+      Optional<Ingredient> savedIngredient = savedRecipe.getIngredients().stream()
+          .filter(ingredient -> Objects.equals(command.getId(), ingredient.getId()))
+          .findFirst();
+
+      if (savedIngredient.isEmpty()) {
+        savedIngredient = savedRecipe.getIngredients().stream()
+            .filter(ingredient -> ingredient.getDescription().equals(command.getDescription()))
+            .filter(ingredient -> ingredient.getAmount().equals(command.getAmount()))
+            .filter(ingredient -> ingredient.getUom().getId().equals(command.getUom().getId()))
+            .findAny();
+      }
+
+      return ingredientToIngredientCommand.convert(savedIngredient.get());
+    }
+  }
+
+  @Override
+  public void deleteById(Long recipeId, Long ingredientId) {
+    Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
+
+    if (optionalRecipe.isEmpty()) {
+      log.error("Recipe not found for id: " + recipeId);
+    } else {
+      Recipe recipe = optionalRecipe.get();
+      Optional<Ingredient> optionalIngredient = recipe.getIngredients().stream()
+          .filter(ingr -> Objects.equals(ingr.getId(), ingredientId))
+          .findFirst();
+
+      if (optionalIngredient.isEmpty()) {
+        log.error("Ingredient not found by id: " + ingredientId);
+      } else {
+        Ingredient ingredient = optionalIngredient.get();
+        ingredient.setRecipe(null);
+        recipe.getIngredients().remove(ingredient);
+        recipeRepository.save(recipe);
+      }
     }
   }
 }
