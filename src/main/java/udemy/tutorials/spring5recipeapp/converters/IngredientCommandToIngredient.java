@@ -4,15 +4,14 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import udemy.tutorials.spring5recipeapp.commands.IngredientCommand;
 import udemy.tutorials.spring5recipeapp.domain.Ingredient;
+import udemy.tutorials.spring5recipeapp.domain.Recipe;
 
 @Component
 public class IngredientCommandToIngredient implements Converter<IngredientCommand, Ingredient> {
 
-//  private final RecipeCommandToRecipe recipeConverter;
   private final UnitOfMeasureCommandToUnitOfMeasure uomConverter;
 
   public IngredientCommandToIngredient(UnitOfMeasureCommandToUnitOfMeasure uomConverter) {
-//    this.recipeConverter = recipeConverter;
     this.uomConverter = uomConverter;
   }
 
@@ -27,8 +26,14 @@ public class IngredientCommandToIngredient implements Converter<IngredientComman
     ingredient.setId(source.getId());
     ingredient.setDescription(source.getDescription());
     ingredient.setAmount(source.getAmount());
-//    ingredient.setRecipe(recipeConverter.convert(source.getRecipe()));
     ingredient.setUom(uomConverter.convert(source.getUom()));
+
+    if (source.getRecipeId() != null) {
+      Recipe recipe = new Recipe();
+      recipe.setId(source.getRecipeId());
+      ingredient.setRecipe(recipe);
+      recipe.addIngredient(ingredient);
+    }
 
     return ingredient;
   }

@@ -9,11 +9,9 @@ import udemy.tutorials.spring5recipeapp.domain.Ingredient;
 public class IngredientToIngredientCommand implements Converter<Ingredient, IngredientCommand> {
 
   private final UnitOfMeasureToUnitOfMeasureCommand uomConverter;
-//  private final RecipeToRecipeCommand recipeConverter;
 
   public IngredientToIngredientCommand(UnitOfMeasureToUnitOfMeasureCommand uomConverter) {
     this.uomConverter = uomConverter;
-//    this.recipeConverter = recipeConverter;
   }
 
   @Override
@@ -28,7 +26,10 @@ public class IngredientToIngredientCommand implements Converter<Ingredient, Ingr
     ingredientCommand.setDescription(source.getDescription());
     ingredientCommand.setAmount(source.getAmount());
     ingredientCommand.setUom(uomConverter.convert(source.getUom()));
-//    ingredientCommand.setRecipe(recipeConverter.convert(source.getRecipe()));
+
+    if (source.getRecipe() != null) {
+      ingredientCommand.setRecipeId(source.getRecipe().getId());
+    }
 
     return ingredientCommand;
   }

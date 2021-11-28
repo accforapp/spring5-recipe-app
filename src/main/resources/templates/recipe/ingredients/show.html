@@ -33,11 +33,15 @@
               <tr>
                 <th>ID</th>
                 <th>Description</th>
+                <th>Amount</th>
+                <th>UOM</th>
               </tr>
               </thead>
               <tr>
                 <td th:text="${ingredient.id}">id</td>
                 <td th:text="${ingredient.description}">description</td>
+                <td th:text="${ingredient.amount}">description</td>
+                <td th:text="${ingredient.uom.description}">description</td>
               </tr>
             </table>
 
