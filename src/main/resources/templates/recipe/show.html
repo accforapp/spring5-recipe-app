@@ -24,7 +24,15 @@
       <div class="panel-group">
         <div class="panel panel-primary">
           <div class="panel-heading">
-            <h1 class="panel-title" th:text="${recipe.description}">Recipe Description</h1>
+            <div class="row">
+              <div class="col-md-3">
+                <h1 class="panel-title" th:text="${recipe.description}">Recipe Description</h1>
+              </div>
+              <div class="col-md-offset-3">
+                <a class="btn btn-default" href="#" th:href="@{'/recipe/' + ${recipe.id} + '/image'}" role="button">Change image</a>
+              </div>
+
+            </div>
           </div>
 
           <div class="panel-body">
@@ -36,6 +44,9 @@
                 <ul>
                   <li th:each="category : ${recipe.getCategories()}" th:text="${category.description}">categories</li>
                 </ul>
+              </div>
+              <div class="col-md-6">
+                <img src="" width="200" height="200">
               </div>
             </div>
 
