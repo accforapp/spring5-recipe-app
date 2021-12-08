@@ -1,11 +1,17 @@
 package udemy.tutorials.spring5recipeapp.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import udemy.tutorials.spring5recipeapp.commands.RecipeCommand;
+import udemy.tutorials.spring5recipeapp.exceptions.NotFoundException;
 import udemy.tutorials.spring5recipeapp.services.RecipeService;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -51,5 +57,17 @@ public class RecipeController {
 
     recipeService.deleteRecipeById(Long.valueOf(id));
     return "redirect:/";
+  }
+
+  @ExceptionHandler(NotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public ModelAndView handleNotFound(Exception e) {
+    log.error("Handling not found exception: " + e.getMessage(), e);
+
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("404error");
+    modelAndView.addObject("exception", e);
+
+    return modelAndView;
   }
 }
