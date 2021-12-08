@@ -37,6 +37,9 @@
 
           <div class="panel-body">
             <div class="row">
+              <div class="col-md-offset-8">
+                <img th:src="@{'/recipe/' + ${recipe.id} + '/recipeimage'}" width="200" height="200">
+              </div>
               <div class="col-md-3">
                 <h5>Categories:</h5>
               </div>
@@ -45,9 +48,7 @@
                   <li th:each="category : ${recipe.getCategories()}" th:text="${category.description}">categories</li>
                 </ul>
               </div>
-              <div class="col-md-6">
-                <img src="" width="200" height="200">
-              </div>
+
             </div>
 
             <div class="row">

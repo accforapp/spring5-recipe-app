@@ -6,6 +6,7 @@ import udemy.tutorials.spring5recipeapp.commands.RecipeCommand;
 import udemy.tutorials.spring5recipeapp.converters.RecipeCommandToRecipe;
 import udemy.tutorials.spring5recipeapp.converters.RecipeToRecipeCommand;
 import udemy.tutorials.spring5recipeapp.domain.Recipe;
+import udemy.tutorials.spring5recipeapp.exceptions.NotFoundException;
 import udemy.tutorials.spring5recipeapp.repositories.RecipeRepository;
 
 import java.util.HashSet;
@@ -37,7 +38,7 @@ public class RecipeServiceImpl implements RecipeService {
 
   @Override
   public Recipe findById(Long id) {
-    return recipeRepository.findById(id).orElseThrow(() -> new RuntimeException("Recipe Not Found!"));
+    return recipeRepository.findById(id).orElseThrow(() -> new NotFoundException("Recipe Not Found!"));
   }
 
   @Override

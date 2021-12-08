@@ -10,6 +10,7 @@ import udemy.tutorials.spring5recipeapp.commands.RecipeCommand;
 import udemy.tutorials.spring5recipeapp.converters.RecipeCommandToRecipe;
 import udemy.tutorials.spring5recipeapp.converters.RecipeToRecipeCommand;
 import udemy.tutorials.spring5recipeapp.domain.Recipe;
+import udemy.tutorials.spring5recipeapp.exceptions.NotFoundException;
 import udemy.tutorials.spring5recipeapp.repositories.RecipeRepository;
 
 import java.util.HashSet;
@@ -55,6 +56,13 @@ class RecipeServiceImplTest {
     Assertions.assertNotNull(recipeReturned, "Null recipe returned");
     Mockito.verify(recipeRepository).findById(Mockito.anyLong());
     Mockito.verify(recipeRepository, Mockito.never()).findAll();
+  }
+
+  @Test
+  void getRecipeByIdNotFound() {
+    when(recipeRepository.findById(1L)).thenReturn(Optional.empty());
+
+    assertThrows(NotFoundException.class, () -> recipeService.findById(1L));
   }
 
   @Test
