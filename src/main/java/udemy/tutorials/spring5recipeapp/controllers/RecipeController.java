@@ -10,6 +10,7 @@ import udemy.tutorials.spring5recipeapp.commands.RecipeCommand;
 import udemy.tutorials.spring5recipeapp.exceptions.NotFoundException;
 import udemy.tutorials.spring5recipeapp.services.RecipeService;
 
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -66,6 +67,18 @@ public class RecipeController {
 
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("404error");
+    modelAndView.addObject("exception", e);
+
+    return modelAndView;
+  }
+
+  @ExceptionHandler(NumberFormatException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ModelAndView handleBadRequest(Exception e) {
+    log.error("Handling number format exception: " + e.getMessage(), e);
+
+    ModelAndView modelAndView = new ModelAndView();
+    modelAndView.setViewName("400error");
     modelAndView.addObject("exception", e);
 
     return modelAndView;
