@@ -4,15 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import udemy.tutorials.spring5recipeapp.commands.RecipeCommand;
 import udemy.tutorials.spring5recipeapp.exceptions.NotFoundException;
 import udemy.tutorials.spring5recipeapp.services.RecipeService;
 
-import java.text.NumberFormat;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import javax.validation.Valid;
 
 @Slf4j
 @Controller
@@ -46,7 +45,13 @@ public class RecipeController {
   }
 
   @PostMapping("recipe")
-  public String saveOrUpdate(@ModelAttribute RecipeCommand command) {
+  public String saveOrUpdate(@Valid @ModelAttribute("recipe") RecipeCommand command, BindingResult result) {
+
+    if (result.hasErrors()) {
+      result.getAllErrors().forEach(error -> log.error(error.toString()));
+
+      return "recipe/recipeform";
+    }
     RecipeCommand savedRecipe = recipeService.saveRecipeCommand(command);
 
     return "redirect:/recipe/" + savedRecipe.getId() + "/show";
@@ -67,18 +72,6 @@ public class RecipeController {
 
     ModelAndView modelAndView = new ModelAndView();
     modelAndView.setViewName("404error");
-    modelAndView.addObject("exception", e);
-
-    return modelAndView;
-  }
-
-  @ExceptionHandler(NumberFormatException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ModelAndView handleBadRequest(Exception e) {
-    log.error("Handling number format exception: " + e.getMessage(), e);
-
-    ModelAndView modelAndView = new ModelAndView();
-    modelAndView.setViewName("400error");
     modelAndView.addObject("exception", e);
 
     return modelAndView;

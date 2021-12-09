@@ -20,6 +20,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.webjars:bootstrap:3.3.7-1'
     implementation 'org.webjars:jquery:3.2.1'
+    implementation 'org.hibernate:hibernate-validator:6.0.13.Final'
 
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

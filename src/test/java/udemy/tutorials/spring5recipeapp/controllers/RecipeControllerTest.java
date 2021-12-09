@@ -6,8 +6,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import udemy.tutorials.spring5recipeapp.commands.RecipeCommand;
 import udemy.tutorials.spring5recipeapp.domain.Recipe;
@@ -37,7 +35,9 @@ public class RecipeControllerTest {
 
     controller = new RecipeController(recipeService);
 
-    mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+    mockMvc = MockMvcBuilders.standaloneSetup(controller)
+        .setControllerAdvice(new ControllerExceptionHandler())
+        .build();
   }
 
   @Test
@@ -103,9 +103,28 @@ public class RecipeControllerTest {
 
     when(recipeService.saveRecipeCommand(any())).thenReturn(recipeCommand);
 
-    mockMvc.perform(post("/recipe").contentType(MediaType.APPLICATION_FORM_URLENCODED))
+    mockMvc.perform(post("/recipe")
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("id", "")
+        .param("description", "someDescription")
+        .param("directions", "someDirections"))
         .andExpect(status().is3xxRedirection())
         .andExpect(view().name("redirect:/recipe/2/show"));
+  }
+
+  @Test
+  void testPostNewRecipeFormValidationFail() throws Exception {
+    RecipeCommand recipeCommand = new RecipeCommand();
+    recipeCommand.setId(2L);
+
+    when(recipeService.findCommandById(2L)).thenReturn(recipeCommand);
+
+    mockMvc.perform(post("/recipe")
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .param("id", ""))
+        .andExpect(status().isOk())
+        .andExpect(model().attributeExists("recipe"))
+        .andExpect(view().name("recipe/recipeform"));
   }
 
   @Test
